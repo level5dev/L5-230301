@@ -438,7 +438,7 @@ export default class Category extends CatalogPage {
     // console.log(width);
 
     if (this.checkMobile()) {
-      $("#grid-all-product").css("width", `100vh`);
+      $("#grid-all-product").css("width", `90vw`);
     } else {
       $("#grid-all-product").css("width", `${width}px`);
     }

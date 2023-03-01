@@ -241,8 +241,10 @@ category:
 <style>
     .grid {
         /* background: #DDD; */
+        all: unset;
         display: none;
         max-width: 1200px;
+        width: 100%;
         min-width: 320px; 
         gap: 50px;
         place-items: center;
@@ -385,6 +387,9 @@ category:
     }
     
     @media only screen and (max-width: 600px) {
+        .product {
+            /* max-width: 350px; */
+        }
         .filter--section { display:none; }
         #product-filter-container {  display: block; }
 
@@ -417,9 +422,9 @@ category:
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
+            width: 80%;
             height: 50px;
-            z-index: 999;
+            
             position: absolute;
         }
         

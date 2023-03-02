@@ -116,6 +116,7 @@ category:
                             {{/if}}
                         </select>
                         <br>
+                        {{> components/custom/custom-sidebar-filter}}
                         <!-- SSCODE: FILTER SELECTOR -->
                         {{!-- Category section --}}
                         {{!--
@@ -137,11 +138,13 @@ category:
             </div>
     </section>
     
+    {{assignVar  'type' 'mobile'}}
+    {{> components/custom/custom-filter-box-at-top-grid}}
     <!-- SSCODE: DESKTOP VER. SORT/FILTER SELECTOR +  DISPLAY PRODUCTS -->
-    <section id="product-listing-container" class="container" section-view>
-        
+    <section id="product-listing-container" class="container" section-view>  
         <section id="product-listing-all">
-            <div class="actionBar filter--section" >
+            <div class="flex-div-section">
+                <div class="actionBar filter--section" >
                     <fieldset class="form-fieldset actionBar-section" >
                         <div class="form-field" align="left">
                             <label class="form-label" for="sort">{{lang 'common.sorter.sort_by'}}</label>
@@ -180,15 +183,16 @@ category:
                         </div>
                     </fieldset>
                 </div>
-               {{> components/custom/custom-filter-box-at-top-grid}} 
-            <div class="flex-div-section">
-                
+               
+            
                 <div class="lds-block">
                     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
                 </div>
-                
-                <div class="grid" id="grid-all-product">
-                    
+                <div>
+                    {{assignVar  'type' 'pc'}}
+                    {{> components/custom/custom-filter-box-at-top-grid type="pc"}} 
+                    <div class="grid" id="grid-all-product">
+                    </div>
                 </div>
             </div>
         </section>
@@ -276,10 +280,10 @@ category:
         width: 300px;
         margin-right: 25px;
     }
+    
+    .filter-list_container[mobile]{display: none;}
+    .filter-list_container[pc]{display: block;}
 
-    #product-listing-all{
-        margin-left: 35px;
-    }
 
     /***************************************************************************/
 
@@ -288,7 +292,7 @@ category:
         justify-content: center;
         align-items: center;
         width: 1200px;
-        z-index: 999;
+        
     }
 
     .lds-ring {
@@ -385,7 +389,14 @@ category:
         color: black;
     }
     
-    @media only screen and (max-width: 600px) {
+    
+    @media only screen and (max-width: 1024px){
+        .filter-list_container[mobile]{
+            display: block;
+            padding-left: 5%;
+            padding-right: 5%;
+        }
+        .filter-list_container[pc]{display: none;}
         .filter--section { display:none; }
         #product-filter-container {  display: block; }
 
@@ -398,8 +409,15 @@ category:
             max-width: 100%;
         }
         #product-listing-all {
-            margin-left: 0px;
+            margin: auto;
         }
+        .lds-block {
+            width: 100%
+        }
+    }
+    
+    @media only screen and (max-width: 600px) {
+        
         .product {
             right: 0px ;
             padding-right: 0px;
@@ -420,8 +438,7 @@ category:
             align-items: center;
             width: 100%;
             height: 50px;
-            z-index: 999;
-            position: absolute;
+            /* position: absolute; */
         }
         
         .lds-ring {
@@ -446,7 +463,7 @@ category:
         }
     }
     
-    @media only screen and (min-width: 600px) {
+    @media only screen and (min-width: 1024px) {
         .filter--section { 
             display:block; 
             }

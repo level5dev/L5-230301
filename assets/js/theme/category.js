@@ -243,7 +243,17 @@ export default class Category extends CatalogPage {
           product-date-created="${pr["date_created"]}" 
           product-is-featured="${pr["is_featured"]}" 
           product-best-selling="${pr["total_sold"]}"
-          product-custom-sort-order="${pr["custom-sort-order"]}">
+          product-custom-sort-order="${pr["custom-sort-order"]}"
+          
+          product-filter-ITA=""
+          product-filter-FBS=""
+          product-filter-FBC=""
+          product-filter-CAT=""
+          product-filter-NCF=""
+          product-filter-NCP=""
+          product-filter-NSI=""
+          product-filter-HT=""
+          >
               <div class="card-wrapper">
                   <article class="card" data-test="card-${pr["id"]}">
                       <figure class="card-figure">
@@ -418,11 +428,14 @@ export default class Category extends CatalogPage {
 
   dynamicGridWidthSizingForIsotope() {
     let width = window.innerWidth;
-    if (width < 320) {
-      width = 320;
-    }
-    if (width > 1200) {
+
+    if (width > 1300) {
       width = 1200;
+    } else if (width < 320) {
+      width = 320;
+    } else if (width < 600) {
+    } else {
+      width = width - 240;
     }
 
     this.resetSectionCssForMobileView();

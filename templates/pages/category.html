@@ -27,23 +27,25 @@ category:
             <!--{{{region name="category_below_header"}}}-->
         {{/unless}}
     </div>
-
-
-
-
-    {{#if category.subcategories}}
+    
     <section class="categoryGrid container">
-            <div style="text-align:center;width: 100%;margin-bottom: 40px;">
+       <div style="text-align:center;width: 100%;margin-bottom: 40px;">
             <a  href="/march-mudness/">
             <div style="width:100%;/* max-width:600px; */margin: auto;text-align:center;padding: 1em 0;background-color:#d20000">
                 <h2 style="margin:0;color:white;font-size:2.5em!important;">
                     MARCH "MUDNESS" SALE
                 </h2>
                 <h3 style="color:white;margin:0 0 10px 0;">
-                    TOOLS UP TO 25% OFF!
+                    TOOLS UP TO 30% OFF!
                 </h3>
-            </div></a>
-        </div>
+            </div>
+            </a>
+        </div> 
+    </section>
+
+    {{#if category.subcategories}}
+    <section class="categoryGrid container">
+            
         
         <ul class="categoryGrid_list">
             {{#each category.subcategories}}

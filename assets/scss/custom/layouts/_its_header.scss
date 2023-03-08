@@ -94,7 +94,7 @@
                }
            }
            /* "or" psuedo-element*/
-           &::after {
+           /*&::after {
                content: "or";
                font-weight: 300;
                font-size: remCalc(10px);
@@ -102,9 +102,9 @@
        
                @include breakpoint('medium') {
                    font-size: remCalc(14px);
-               }
+               } 
        
-           }
+           }*/
        }
 
        /*------------------------------------

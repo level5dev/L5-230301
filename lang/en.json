@@ -48,8 +48,8 @@
 
                 "number-of-links": "6",
                 "link-1": {
-                    "link": "#",
-                    "text": " "
+                    "link": "/merch/",
+                    "text": "MERCH"
                 },
                 "link-2": {
                     "link": "/login.php",
@@ -220,16 +220,16 @@
             "bottom-callout": {
                 "callout-1": {
                     "title": "Monthly Tool Giveaway",
-                    "month": "January's VIP Winner",
-                    "winner-name": "Henry Benoit",
-                    "location": "Top Notch Drywall and Painting",
-                    "item-month": "February Giveaway",
-                    "item-image": "/thumbs/5-460.jpg",
-                    "item-image-alt": "Skimming Blade Set",
+                    "month": "February's VIP Winner",
+                    "winner-name": "Anothony Oddon",
+                    "location": "Oddon Drywall",
+                    "item-month": "March Giveaway",
+                    "item-image": "/thumbs/4-771.jpg",
+                    "item-image-alt": "Compound Pump",
                     "item-brand-img": "/home-images/l5-brand.png",
                     "item-brand-img-alt": "Level 5 Brand",
-                    "item-title": "Hawk & Trowels Set",
-                    "item-value": "Valued at <strong>$149!</strong>",
+                    "item-title": "Compound Pump",
+                    "item-value": "Valued at <strong>$399!</strong>",
                     "link-text": "Not a LEVEL5 VIP yet?",
                     "link-url": "https://info.level5tools.com/vip"
                 },

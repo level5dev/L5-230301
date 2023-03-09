@@ -166,7 +166,7 @@ export default class Category extends CatalogPage {
     const UUIDcatc = this.context.UUIDcatc;
     const categoryId = this.context.categoryId;
     axios
-      .get("https://sufri.api.stdlib.com/l5t@dev/getAllProduct/", {
+      .get("https://sufri.autocode.dev/l5t@dev/getATProduct/", {
         params: { id: categoryId },
       })
       .then(function (response) {
@@ -389,6 +389,7 @@ export default class Category extends CatalogPage {
           cat = cat + cat_list[pr_cat[i]]["cat_id"].join(" ") + " ";
         }
       }
+      console.log(cat);
       return cat;
     }
   }

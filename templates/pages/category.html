@@ -4,6 +4,13 @@ category:
     products:
         limit: 100
 ---
+{{#if (getVar 'UUIDcounter')}}
+    {{assignVar 'UUIDcounter' (add (getVar 'UUIDcounter') 1)}}
+    {{assignVar 'UUIDcatc' (add (toInt (moment unixtimestamp format="x")) (getVar 'UUIDcounter'))}}
+{{else}}
+    {{assignVar 'UUIDcounter' 1}}
+    {{assignVar 'UUIDcatc' (toInt (moment unixtimestamp format="x"))}}
+{{/if}}
 {{inject "categoryProductsPerPage" 100}}
 {{inject "categoryId" category.id}}
 {{inject "products" category.products}}
@@ -20,6 +27,8 @@ category:
 {{/partial}}
 
 {{#partial "page"}}
+
+{{> components/custom/category-style}}
 
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
 
@@ -74,8 +83,8 @@ category:
             </li>
             {{/each}}
         </ul>
-    </section>
     {{/if}}
+    </section>
 
 
     {{#if theme_settings.its.category_subcat_cards}}
@@ -132,131 +141,7 @@ category:
     <div class="loadingOverlay loadingOverlay--product-listing"></div>
 </div>
 
-<style>
-.lds-ellipsis {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: auto;
-}
-.lds-ellipsis div {
-  position: absolute;
-  top: 33px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #cacaca;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
-}
-.lds-ellipsis div:nth-child(1) {
-  left: 8px;
-  animation: lds-ellipsis1 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(2) {
-  left: 8px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(3) {
-  left: 32px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(4) {
-  left: 56px;
-  animation: lds-ellipsis3 0.6s infinite;
-}
-@keyframes lds-ellipsis1 {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes lds-ellipsis3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
-}
-@keyframes lds-ellipsis2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(24px, 0);
-  }
-}
 
-
-/* ********************************** */
-.grid {
-    /* background: #DDD; */
-    all: unset;
-    display: flex;
-    flex-wrap: wrap;
-    /* max-width: 1200px; */
-    width: 100%;
-    min-width: 320px; 
-    /* gap: 50px; */
-    place-items: center;
-    margin-top: 10px;
-}
-
-.grid:after {
-    content: '';
-    display: block;
-    clear: both;
-    margin-top: 10px;
-}
-
-/* ---- .grid-item ---- */
-
-.product {
-    float: center;
-    width: 25%;
-    min-width: 280px;
-    height: 450px;
-    padding-bottom: 20px;
-    padding-right: 20px;
-}
-
-.flex-div-section {
-    display: flex;
-    justify-content: flex-start;
-}
-
-.filter--section{
-    width: 300px;
-    margin-right: 25px;
-}
-
-#product-listing-all{
-    margin-left: 35px;
-}
-@media only screen and (max-width: 600px) {
-        
-        .product {
-            right: 0px ;
-            padding-right: 0px;
-            margin: auto;
-            width: 90%;
-            min-height: auto;
-            height:auto !important;
-        }
-        
-        figure.card-figure {
-            overflow: visible;
-        }
-        #product-listing-all {
-            margin: 0;
-        }
-        
-    }
-
-</style>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>

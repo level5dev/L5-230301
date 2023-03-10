@@ -467,6 +467,7 @@ export default class Category extends CatalogPage {
         // options...
         itemSelector: ".product",
         layoutMode: "fitRows",
+
         getSortData: {
           name: function (itemElem) {
             return itemElem.getAttribute("data-name");
@@ -525,6 +526,20 @@ export default class Category extends CatalogPage {
           });
         }
       }, 3);
+
+      let resizeLayout = false;
+
+      addEventListener("resize", (event) => {
+        resizeLayout = true;
+      });
+      iso.on("layoutComplete", function () {
+        if (resizeLayout) {
+          resizeLayout = false;
+          iso.arrange();
+          return;
+        }
+        return;
+      });
     }
   }
 }

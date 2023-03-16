@@ -1,4 +1,5 @@
 const customSidebar = () => {
+  const createEvent = new Event("CheckboxUpdated", {});
   const title = {
     // Include Automatic Taper?
     YT: "Taper Included",
@@ -46,7 +47,7 @@ const customSidebar = () => {
       // console.log("clicked");
     });
   });
-  const checked_list = [];
+
   $(".tag_title--block").click(function () {
     const input = $(this).siblings().find("input");
     if (input.is(":checked")) {
@@ -84,6 +85,8 @@ const customSidebar = () => {
         });
       }, 0);
     });
+
+    window.dispatchEvent(createEvent);
   }
 };
 

@@ -2,7 +2,7 @@
 category:
     shop_by_price: true
     products:
-        limit: {{theme_settings.categorypage_products_per_page}}
+        limit: 100
 ---
 {{#if (getVar 'UUIDcounter')}}
     {{assignVar 'UUIDcounter' (add (getVar 'UUIDcounter') 1)}}
@@ -12,9 +12,10 @@ category:
     {{assignVar 'UUIDcatc' (toInt (moment unixtimestamp format="x"))}}
 {{/if}}
 
-{{inject "UUIDcatc" (getVar 'UUIDcounter')}}
-{{inject "categoryProductsPerPage" theme_settings.categorypage_products_per_page}}
+{{inject "categoryProductsPerPage" 100}}
 {{inject "categoryId" category.id}}
+{{inject "products" category.products}}
+{{inject "UUIDcatc" (getVar 'UUIDcounter')}}
 {{inject "subcategories" category.subcategories}}
 
 {{#partial "head"}}
@@ -29,6 +30,9 @@ category:
 {{#partial "page"}}
 
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
+
+<!-- style pages -->
+{{> components/custom/category/custom-style}}
 
 <div class="page">
     <div class="container category-heading__container">
@@ -92,7 +96,7 @@ category:
     
     <!-- SSCODE: MOBILE SORT/FILTER SELECTOR -->
     <section class="container" id="product-filter-container">
-        <button class="sort--button" type="button" onclick="sortfilterBtn()">SORT/FILTER</button>
+        <button class="sort--button" type="button" onclick="sortfilterBtn()" id="sort-button" disabled>SORT/FILTER</button>
         <div class="actionBar filter--section_mobile" >
                 <fieldset class="form-fieldset actionBar-section" >
                     <div class="form-field" align="left">
@@ -116,7 +120,7 @@ category:
                             {{/if}}
                         </select>
                         <br>
-                        {{> components/custom/custom-sidebar-filter}}
+                        {{> components/custom/filter/custom-sidebar-filter}}
                         <!-- SSCODE: FILTER SELECTOR -->
                         {{!-- Category section --}}
                         {{!--
@@ -139,16 +143,18 @@ category:
     </section>
     
     {{assignVar  'type' 'mobile'}}
-    {{> components/custom/custom-filter-box-at-top-grid}}
+    {{> components/custom/filter/custom-filter-box-at-top-grid}}
     <!-- SSCODE: DESKTOP VER. SORT/FILTER SELECTOR +  DISPLAY PRODUCTS -->
     <section id="product-listing-container" class="container" section-view>  
         <section id="product-listing-all">
             <div class="flex-div-section">
+                
+                
                 <div class="actionBar filter--section" >
                     <fieldset class="form-fieldset actionBar-section" >
                         <div class="form-field" align="left">
                             <label class="form-label" for="sort">{{lang 'common.sorter.sort_by'}}</label>
-                            <select class="form-select form-select--small " name="sort" id="all-sort-select" role="listbox">
+                            <select class="form-select form-select--small " name="sort" id="all-sort-select" role="listbox" disabled>
                                 {{#if (length category.subcategories) '===' 0 }}
                                     <option value="custom_sort_order-asc" >Default</option>
                                 {{/if}}
@@ -165,7 +171,7 @@ category:
                                 {{/if}}
                             </select>
                             <br>
-                            {{> components/custom/custom-sidebar-filter}}
+                            {{> components/custom/filter/custom-sidebar-filter}}
                             {{!-- Category section --}}
                             {{!-- 
                                 {{#if category.subcategories}}
@@ -182,17 +188,20 @@ category:
                             --}}
                         </div>
                     </fieldset>
+                    <!-- {{> components/custom/filter/custom-filter-skeleton}} -->
                 </div>
-               
+              
             
-                <div class="lds-block">
+                <!-- <div class="lds-block">
                     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
                 </div>
-                <div>
-                    {{assignVar  'type' 'pc'}}
-                    {{> components/custom/custom-filter-box-at-top-grid type="pc"}} 
-                    <div class="grid" id="grid-all-product">
-                    </div>
+                <div> -->
+                    
+                    <!-- <div class="grid" id="grid-all-product">
+                    </div> -->
+                   
+                    {{> components/category/product-listing}}
+                        
                 </div>
             </div>
         </section>
@@ -242,234 +251,7 @@ category:
     <div class="loadingOverlay loadingOverlay--product-listing"></div>
 </div>
 
-<style>
-    .grid {
-        /* background: #DDD; */
-        display: none;
-        max-width: 1200px;
-        min-width: 320px; 
-        gap: 50px;
-        place-items: center;
-        margin-top: 10px;
-    }
 
-    .grid:after {
-        content: '';
-        display: block;
-        clear: both;
-        margin-top: 10px;
-    }
-
-    /* ---- .grid-item ---- */
-
-    .product {
-        float: center;
-        width: 25%;
-        min-width: 280px;
-        height: 450px;
-        padding-bottom: 20px;
-        padding-right: 20px;
-    }
-    
-    .flex-div-section {
-        display: flex;
-        justify-content: flex-start;
-    }
-
-    .filter--section{
-        width: 300px;
-        margin-right: 25px;
-    }
-    
-    .filter-list_container[mobile]{display: none;}
-    .filter-list_container[pc]{display: block;}
-
-
-    /***************************************************************************/
-
-    .lds-block {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 1200px;
-        
-    }
-
-    .lds-ring {
-        display: inline-block;
-        position: relative;
-        margin-top: 100px;
-        margin-bottom: 100px;
-        width: 80px;
-        height: 80px;
-    }
-    
-    .lds-ring div {
-        box-sizing: border-box;
-        display: block;
-        position: absolute;
-        width: 64px;
-        height: 64px;
-        margin: 8px;
-        border: 8px solid #3498db;
-        border-radius: 50%;
-        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        border-color: #3498db transparent transparent transparent;
-    }
-    
-    .lds-ring div:nth-child(1) {
-        animation-delay: -0.45s;
-    }
-    
-    .lds-ring div:nth-child(2) {
-        animation-delay: -0.3s;
-    }
-    
-    .lds-ring div:nth-child(3) {
-        animation-delay: -0.15s;
-    }
-    
-    @keyframes lds-ring {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg);  }
-    }
-    
-    input[type='checkbox'] {
-        accent-color: red;
-        width: 20px;
-        height: 20px;
-    }
-    
-    input[type="checkbox"]:active{
-        outline:none;
-    }
-    
-    .filter--section_mobile { 
-        display:none;
-    }
-    
-    .sort--button {
-        font-family: "Roboto", Arial, Helvetica, sans-serif;
-        background-color: #f9f9f9;
-        border-radius: 2px;
-        margin-left: 20px;
-        margin-bottom: 25px;
-        padding: 5px;
-        padding-right: 10px;
-        padding-left: 10px;
-        outline-color: transparent;
-        outline-style: solid;
-        box-shadow: 0 0 0 0.5px #b8000d;
-    }
-    
-    .close--button {
-        font-family: "Roboto", Arial, Helvetica, sans-serif;
-        margin-bottom: 30px;
-        background-color: #c60b2e;
-        color: #faebd7;
-        width: -webkit-fill-available;
-        padding: 5px;
-    }
-    
-     div.filter-option {
-        display: flex;
-        align-items: center;
-    }
-        
-    .filter-option {
-        font-family: "Oswald", Arial, Helvetica, sans-serif;
-        text-transform: uppercase;
-        font-weight: inherit;
-    }
-        
-    .form-select--small {
-        font-family: "Oswald", Arial, Helvetica, sans-serif;
-        text-transform: uppercase;
-        font-weight: 200;
-        color: black;
-    }
-    
-    
-    @media only screen and (max-width: 1024px){
-        .filter-list_container[mobile]{
-            display: block;
-            padding-left: 5%;
-            padding-right: 5%;
-        }
-        .filter-list_container[pc]{display: none;}
-        .filter--section { display:none; }
-        #product-filter-container {  display: block; }
-
-        .actionBar.filter--section_mobile { 
-            width:275px;
-            margin-bottom: 0;
-            margin-top: 0;
-        }
-        .container{
-            max-width: 100%;
-        }
-        #product-listing-all {
-            margin: auto;
-        }
-        .lds-block {
-            width: 100%
-        }
-    }
-    
-    @media only screen and (max-width: 600px) {
-        
-        .product {
-            right: 0px ;
-            padding-right: 0px;
-            margin: auto;
-            width: 90%;
-            min-height: auto;
-            height:auto !important;
-        }
-        
-        figure.card-figure {
-            overflow: visible;
-        }
-        
-        .lds-block {
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 50px;
-            /* position: absolute; */
-        }
-        
-        .lds-ring {
-            display: inline-block;
-            position: relative;
-            margin-top: 100px;
-            margin-bottom: 100px;
-            width: 30px;
-            height: 30px;
-        }
-        
-        .lds-ring div {
-            box-sizing: border-box;
-            display: block;
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 8px solid #3498db;
-            border-radius: 50%;
-            animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            border-color: #3498db transparent transparent transparent;
-        }
-    }
-    
-    @media only screen and (min-width: 1024px) {
-        .filter--section { 
-            display:block; 
-            }
-        #product-filter-container { display:none; }
-    }
-</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
 <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>

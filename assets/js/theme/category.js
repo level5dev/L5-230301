@@ -44,8 +44,9 @@ export default class Category extends CatalogPage {
   }
 
   onReady() {
-    this.populateGridProduct();
-    this.arrangeFocusOnSortBy();
+    // this.populateGridProduct();
+    this.validateProductsCount();
+    this.dynamicResizeProductGrid();
     customSidebar();
 
     $('[data-button-type="add-cart"]').on("click", (e) =>
@@ -162,35 +163,68 @@ export default class Category extends CatalogPage {
     });
   }
 
+  //resize
+  dynamicResizeProductGrid() {
+    // const filter = $(".actionBar.filter--section").width();
+    // const wrapper = $("#product-listing-container").width();
+    // $("#product-block").width(wrapper - filter);
+    // console.log(wrapper - filter);
+  }
+
   //SSCODE: Populate Product Grid in category.html
-  populateGridProduct() {
+  validateProductsCount() {
+    const products = this.context.products;
     const body = this;
     const UUIDcatc = this.context.UUIDcatc;
     const categoryId = this.context.categoryId;
+    let num = this.context.num;
+    // console.log(products);
+    const existProdId = [];
+    products.forEach((pr) => {
+      existProdId.push(pr.id);
+    });
+
+    // console.log(existProdId);
     axios
-      .get("https://sufri.api.stdlib.com/l5t@dev/getAllProduct/", {
+      .get("https://sufri.autocode.run/l5t@dev/getATProduct/", {
         params: { id: categoryId },
       })
       .then(function (response) {
-        const gridAllProducts = $("#grid-all-product");
         const data = response.data.product;
-        const category = response.data.category;
-        console.log(response);
-
         data.forEach((pr) => {
-          let img = {};
-          for (let i = 0; i < pr["images"].length; i++) {
-            if (pr["images"][i]["is_thumbnail"]) {
-              img = pr["images"][i];
-              break;
-            }
+          if (existProdId.includes(pr["id"])) {
+            const $item = $(`.product[data-entity-id="${pr["id"]}"]`);
+            $item.attr("data-best-selling", `${pr["total_sold"]}`);
+            $item.attr("data-date-created", `${pr["date_created"]}`);
+          } else if (products.length > 99) {
+            const template = constructTemplate(pr, num);
+            num = num + 1;
+            $("#isotope-container").append(template);
           }
+        });
+        $("#loader-block").hide();
+        body.newConfigureIsotopeForAll();
+        body.startGlobal();
+        // body.disableViewDetailButton();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-          let actionSection = "";
-          if (pr["variants"].length > 1) {
-            actionSection = `<button type="button" class="button button--primary quickview button--quickview" data-product-id="${pr["id"]}">View Options</button>`;
-          } else {
-            actionSection = `
+    function constructTemplate(pr, num) {
+      let img = {};
+      for (let i = 0; i < pr["images"].length; i++) {
+        if (pr["images"][i]["is_thumbnail"]) {
+          img = pr["images"][i];
+          break;
+        }
+      }
+
+      let actionSection = "";
+      if (pr["variants"].length > 1) {
+        actionSection = `<button type="button" class="button button--primary quickview button--quickview" data-product-id="${pr["id"]}">View Options</button>`;
+      } else {
+        actionSection = `
             <div class="card-atc js-card-atc">
               <div class="card-atc__section card-atc__section--qty">
                 <label for="card-atc__qty-${pr["id"]}-${UUIDcatc}" class="card-atc__label is-srOnly">Quantity:</label>
@@ -222,12 +256,12 @@ export default class Category extends CatalogPage {
                 <span class="product-status-message aria-description--hidden">Adding to cart… The item has been added</span>
               </div>
           </div>`;
-          }
+      }
 
-          const template = `
+      const template = `
           <div id="product-${pr["id"]}" sort-order="${pr["sort_order"]}" 
           class="product"
-          product-data-category="${getAllCategory(category, pr["categories"])}" 
+          product-data-category="${pr["categories"]}" 
           product-data-name="${pr["fake-heading"]}" 
           product-data-review="${
             pr["reviews_count"] === 0
@@ -244,8 +278,9 @@ export default class Category extends CatalogPage {
           product-is-featured="${pr["is_featured"]}" 
           product-best-selling="${pr["total_sold"]}"
           product-custom-sort-order="${pr["custom-sort-order"]}"
+          data-custom-num="${num}"
           
-          product-filter-ITA=""
+          product-filter-IAT=""
           product-filter-FBS=""
           product-filter-FBC=""
           product-filter-CAT=""
@@ -366,31 +401,13 @@ export default class Category extends CatalogPage {
                               <button type="button" onclick="window.location.href=${
                                 pr["custom_url"]["url"]
                               }" 
-                              class="button button--primary button--quickview" >View Details</button>
+                              class="button button--primary" >View Details</button>
                          </div>
                       </div>
                   </article>
               </div>
           </div>`;
-
-          gridAllProducts.append(template);
-        });
-
-        body.configureIsotopeForAll();
-        body.startGlobal();
-      })
-      .catch(function (error) {
-        console.log("error", error);
-      });
-
-    function getAllCategory(cat_list, pr_cat) {
-      let cat = "";
-      for (let i = 0; i < pr_cat.length; i++) {
-        if (cat_list[pr_cat[i]] !== undefined) {
-          cat = cat + cat_list[pr_cat[i]]["cat_id"].join(" ") + " ";
-        }
-      }
-      return cat;
+      return template;
     }
   }
 
@@ -434,8 +451,9 @@ export default class Category extends CatalogPage {
     } else if (width < 320) {
       width = 320;
     } else if (width < 600) {
+      // purposely empty block
     } else {
-      width = width - 240;
+      width = width - 320;
     }
 
     this.resetSectionCssForMobileView();
@@ -444,6 +462,153 @@ export default class Category extends CatalogPage {
     $("#grid-all-product").css("width", `${width}px`);
   }
 
+  newConfigureIsotopeForAll() {
+    // $(".grid").css("display", "grid");
+    //   $(".lds-block").hide();
+    let grid = document.getElementById("isotope-container");
+    const body = this;
+
+    // for testing, comment this section and call the runImageTest()
+    let iso;
+    runIsotope();
+
+    $(".filter--container").css("opacity", "100%");
+    $("#all-sort-select, #all-sort-select").prop("disabled", false);
+    // if (this.checkMobile()) {
+    //   runImageTest();
+    // } else {
+    //   $(".grid").css("display", "grid");
+    //   $(".lds-block").hide();
+    //   runIsotope();
+    // }
+
+    // runImageTest();
+
+    // it will call runIsotope() if all images are loaded
+    function runImageTest() {
+      //   $(".grid").css("display", "grid");
+      //   $(".lds-block").hide();
+
+      let imgLoaded = true;
+
+      let testImgInt = setInterval(() => {
+        var cardImgs = document.querySelectorAll(
+          "#grid-all-product .card-image"
+        );
+        if (cardImgs.length > 0) {
+          for (var i = 0; i < cardImgs.length; i++) {
+            var nonZero = true;
+            if (cardImgs[i].offsetHeight < 100) {
+              imgLoaded = false;
+              nonZero = false;
+              break;
+            }
+            if (nonZero) {
+              imgLoaded = true;
+            }
+          }
+        } else {
+          imgLoaded = false;
+        }
+
+        if (imgLoaded) {
+          clearInterval(testImgInt);
+          runIsotope();
+          // body.configureIsotopeForAll();
+          // body.startGlobal();
+          // $(".lds-block").hide();
+        }
+      }, 0);
+    }
+
+    function runIsotope() {
+      // $(window).load(function () {
+      // setTimeout(function () {
+
+      iso = new Isotope(grid, {
+        // options...
+        itemSelector: ".product",
+        layoutMode: "fitRows",
+        getSortData: {
+          name: function (itemElem) {
+            return itemElem.getAttribute("data-name");
+          },
+          price: function (itemElem) {
+            return Number(itemElem.getAttribute("data-product-price"));
+          },
+          review: function (itemElem) {
+            return itemElem.getAttribute("data-rating");
+          },
+          best_selling: function (itemElem) {
+            return Number(itemElem.getAttribute("data-best-selling"));
+          },
+          newest: function (itemElem) {
+            return itemElem.getAttribute("data-date-created");
+          },
+          custom_sort_order: function (itemElem) {
+            return Number(itemElem.getAttribute("data-custom-sort"));
+          },
+          custom_sort_num: function (itemElem) {
+            return Number(itemElem.getAttribute("data-custom-num"));
+          },
+        },
+      });
+      // });
+      // }, 0);
+
+      $("#all-sort-select, #all-sort-select-mobile").change(function () {
+        const val = $(this).val().split("-");
+
+        if (val[0] === "review") {
+          iso.arrange({
+            sortBy: [val[0], "rating_count"],
+            sortAscending: {
+              review: false,
+              rating_count: false,
+            },
+          });
+        } else {
+          iso.arrange({
+            sortBy: val[0],
+            sortAscending: val[1] === "asc",
+          });
+        }
+      });
+
+      $("#all-sort-select, #sort-button").prop("disabled", false);
+
+      setTimeout(function () {
+        if (body.context.subcategories.length === 0) {
+          iso.arrange({
+            sortBy: "custom_sort_order",
+            sortAscending: true,
+          });
+        } else {
+          iso.arrange({
+            sortBy: "custom_sort_num",
+            sortAscending: true,
+          });
+        }
+      }, 3);
+
+      let resizeLayout = false;
+
+      addEventListener("resize", (event) => {
+        resizeLayout = true;
+      });
+      iso.on("layoutComplete", function () {
+        if (resizeLayout) {
+          resizeLayout = false;
+          iso.arrange();
+          return;
+        }
+        return;
+      });
+    }
+  }
+}
+
+/*
   configureIsotopeForAll() {
     // $(".grid").css("display", "grid");
     //   $(".lds-block").hide();
@@ -459,6 +624,13 @@ export default class Category extends CatalogPage {
       $(".lds-block").hide();
       runIsotope();
     }
+
+    // $("[input-filter]").on("change", getIsotopeFilter);
+    // CheckboxUpdated
+
+    window.addEventListener("CheckboxUpdated", () => {
+      getIsotopeFilter();
+    });
 
     body.dynamicGridWidthSizingForIsotope();
     let resized = true;
@@ -611,7 +783,6 @@ export default class Category extends CatalogPage {
         if (resized) {
           resized = false;
           iso.arrange();
-          console.log("complete");
           return;
         }
         return;
@@ -631,5 +802,61 @@ export default class Category extends CatalogPage {
         }
       }, 3);
     }
+
+    function getIsotopeFilter() {
+      if ($("[input-filter]:checked").length <= 0) {
+        console.log("*");
+        return;
+      }
+
+      let final = "";
+      const arrayInput = [
+        { name: "product-filter-IAT", array: [] },
+        { name: "product-filter-FBS", array: [] },
+        { name: "product-filter-FBC", array: [] },
+        { name: "product-filter-CAT", array: [] },
+        { name: "product-filter-NCF", array: [] },
+        { name: "product-filter-NCP", array: [] },
+        { name: "product-filter-NSI", array: [] },
+        { name: "product-filter-HT", array: [] },
+      ];
+      const temp_dict = {};
+      function findCombinations(arrays, result = "", currentIndex = 0) {
+        if (currentIndex === arrays.length) {
+          final = final + result.trim().split(" ").join("") + " ";
+          // console.log(result.trim());
+          return;
+        }
+        const currentArray = arrays[currentIndex];
+        for (let i = 0; i < currentArray.array.length; i++) {
+          const currentElement = currentArray.array[i];
+          let currentResult = result;
+          if (currentElement !== "") {
+            currentResult = `${result}[${currentArray.name}='${currentElement}'] `;
+          }
+          findCombinations(arrays, currentResult, currentIndex + 1);
+        }
+      }
+
+      $("[input-filter]:checked").each(function () {
+        const val = $(this).val();
+
+        const type = $(this).attr("input-filter");
+        if (temp_dict[type] === undefined) {
+          temp_dict[type] = [$(this).val()];
+        } else {
+          temp_dict[type].push($(this).val());
+        }
+      });
+
+      arrayInput.forEach((x) => {
+        const _temp = x["name"].split("-");
+        const k = _temp[_temp.length - 1].toLowerCase();
+        x["array"] = temp_dict[k] === undefined ? [""] : temp_dict[k];
+      });
+      final = "";
+      findCombinations(arrayInput);
+      console.log(final);
+    }
   }
-}
+*/
